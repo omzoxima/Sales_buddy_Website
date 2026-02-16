@@ -1,0 +1,21 @@
+<svg width="280" height="80" viewBox="0 0 280 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Zoxima triangle symbol -->
+  <g transform="translate(10, 10)">
+    <!-- Red triangle -->
+    <path d="M30 0 L60 52 L0 52 Z" fill="#CC2229"/>
+    <!-- Blue triangle -->
+    <path d="M20 20 L50 52 L50 20 Z" fill="#1B3F91"/>
+    <!-- Green triangle -->
+    <path d="M10 52 L40 20 L40 52 Z" fill="#2D6A3F"/>
+  </g>
+  
+  <!-- "zoxima" text (white for dark backgrounds) -->
+  <text x="80" y="48" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="600" fill="#ffffff">
+    zoxima
+  </text>
+  
+  <!-- "SalesBuddy" text (light gray for dark backgrounds) -->
+  <text x="175" y="48" font-family="Inter, system-ui, sans-serif" font-size="28" font-weight="400" fill="#94a3b8">
+    SalesBuddy
+  </text>
+</svg>

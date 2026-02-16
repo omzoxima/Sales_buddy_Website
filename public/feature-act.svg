@@ -1,0 +1,85 @@
+<svg width="600" height="450" viewBox="0 0 600 450" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background -->
+  <rect width="600" height="450" rx="16" fill="#F8FAFC"/>
+  
+  <!-- Phone Frame -->
+  <rect x="190" y="20" width="220" height="410" rx="24" fill="#1E293B" stroke="#334155" stroke-width="2"/>
+  <rect x="198" y="36" width="204" height="378" rx="16" fill="white"/>
+  
+  <!-- Phone Status Bar -->
+  <rect x="198" y="36" width="204" height="36" rx="16" fill="#059669"/>
+  <rect x="198" y="56" width="204" height="16" fill="#059669"/>
+  <text x="220" y="55" font-family="Inter, system-ui, sans-serif" font-size="10" fill="white" fill-opacity="0.9">9:41</text>
+  <text x="370" y="55" font-family="Inter, system-ui, sans-serif" font-size="9" fill="white" fill-opacity="0.9">🔋</text>
+  <text x="280" y="55" font-family="Inter, system-ui, sans-serif" font-size="11" font-weight="600" fill="white">🎤 Voice Update</text>
+  
+  <!-- Sound Waves -->
+  <rect x="240" y="90" width="4" height="30" rx="2" fill="#059669" opacity="0.6">
+    <animate attributeName="height" values="30;15;30" dur="1s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="90;97;90" dur="1s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="252" y="82" width="4" height="46" rx="2" fill="#059669" opacity="0.8">
+    <animate attributeName="height" values="46;20;46" dur="1.2s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="82;95;82" dur="1.2s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="264" y="76" width="4" height="58" rx="2" fill="#059669">
+    <animate attributeName="height" values="58;25;58" dur="0.8s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="76;92;76" dur="0.8s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="276" y="86" width="4" height="38" rx="2" fill="#059669" opacity="0.8">
+    <animate attributeName="height" values="38;18;38" dur="1.1s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="86;96;86" dur="1.1s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="288" y="80" width="4" height="50" rx="2" fill="#059669" opacity="0.7">
+    <animate attributeName="height" values="50;22;50" dur="0.9s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="80;94;80" dur="0.9s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="300" y="88" width="4" height="34" rx="2" fill="#059669" opacity="0.6">
+    <animate attributeName="height" values="34;16;34" dur="1.3s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="88;97;88" dur="1.3s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="312" y="84" width="4" height="42" rx="2" fill="#059669" opacity="0.5">
+    <animate attributeName="height" values="42;18;42" dur="1s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="84;96;84" dur="1s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="324" y="90" width="4" height="30" rx="2" fill="#059669" opacity="0.4">
+    <animate attributeName="height" values="30;14;30" dur="1.4s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="90;98;90" dur="1.4s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="336" y="86" width="4" height="38" rx="2" fill="#059669" opacity="0.3">
+    <animate attributeName="height" values="38;16;38" dur="1.1s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="86;97;86" dur="1.1s" repeatCount="indefinite"/>
+  </rect>
+  <rect x="348" y="92" width="4" height="26" rx="2" fill="#059669" opacity="0.2">
+    <animate attributeName="height" values="26;12;26" dur="1.2s" repeatCount="indefinite"/>
+    <animate attributeName="y" values="92;99;92" dur="1.2s" repeatCount="indefinite"/>
+  </rect>
+  
+  <!-- Transcription -->
+  <rect x="210" y="148" width="180" height="80" rx="10" fill="#F0FDF4" stroke="#BBF7D0" stroke-width="1"/>
+  <text x="222" y="168" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="#166534">Transcription:</text>
+  <text x="222" y="184" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#475569">"Met with John at Acme today.</text>
+  <text x="222" y="196" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#475569">They want 3 units of VM-50.</text>
+  <text x="222" y="208" font-family="Inter, system-ui, sans-serif" font-size="9" fill="#475569">Follow up next Tuesday."</text>
+  
+  <!-- Arrow -->
+  <text x="290" y="248" text-anchor="middle" font-family="Inter, system-ui, sans-serif" font-size="16" fill="#059669">↓</text>
+  
+  <!-- CRM Update Card -->
+  <rect x="210" y="258" width="180" height="138" rx="10" fill="white" stroke="#E2E8F0" stroke-width="1.5"/>
+  <rect x="210" y="258" width="180" height="32" rx="10" fill="#059669"/>
+  <rect x="210" y="278" width="180" height="12" fill="#059669"/>
+  <text x="222" y="278" font-family="Inter, system-ui, sans-serif" font-size="10" font-weight="600" fill="white">✅ CRM Updated</text>
+  
+  <text x="222" y="310" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="600" fill="#64748B">Account</text>
+  <text x="222" y="323" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#1E293B">Acme Corporation</text>
+  
+  <text x="222" y="342" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="600" fill="#64748B">Next Step</text>
+  <text x="222" y="355" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#1E293B">Follow up - Tuesday</text>
+  
+  <text x="222" y="374" font-family="Inter, system-ui, sans-serif" font-size="9" font-weight="600" fill="#64748B">Products</text>
+  <text x="222" y="387" font-family="Inter, system-ui, sans-serif" font-size="10" fill="#1E293B">VM-50 × 3</text>
+
+  <!-- Notch -->
+  <rect x="260" y="22" width="80" height="18" rx="9" fill="#1E293B"/>
+</svg>

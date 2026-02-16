@@ -1,0 +1,11 @@
+# Robots.txt for Zoxima SalesBuddy AI
+
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://zoxima.com/sitemap.xml
+
+# Disallow admin/private areas (when implemented)
+# Disallow: /admin/
+# Disallow: /app/
