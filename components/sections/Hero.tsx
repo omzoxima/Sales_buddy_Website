@@ -91,7 +91,7 @@ export function Hero() {
             >
               <video
                 ref={videoRef}
-                src="/Enterprise AI Demo 1.mp4"
+                src="/demo-video.mp4"
                 className="w-full aspect-video object-cover"
                 playsInline
                 onEnded={() => setIsPlaying(false)}
@@ -128,7 +128,7 @@ export function Hero() {
             </button>
             <video
               ref={modalVideoRef}
-              src="/Enterprise AI Demo 1.mp4"
+              src="/demo-video.mp4"
               className="w-full rounded-xl"
               controls
               autoPlay

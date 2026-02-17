@@ -1,9 +1,9 @@
 'use client'
 
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import Link from 'next/link'
 import Image from 'next/image'
-import { Menu, X, ChevronDown } from 'lucide-react'
+import { Menu, X, ChevronDown, Bot } from 'lucide-react'
 import { Button, Container } from '@/components/ui'
 import { NAV_LINKS, NAV_RESOURCES, SITE_CONFIG } from '@/lib/constants'
 import { cn } from '@/lib/utils'
@@ -11,6 +11,33 @@ import { cn } from '@/lib/utils'
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [resourcesOpen, setResourcesOpen] = useState(false)
+  const [demoEmail, setDemoEmail] = useState<string | null>(null)
+  const [demoExpired, setDemoExpired] = useState(false)
+
+  // Check demo user in database via session API
+  useEffect(() => {
+    // Read email from cookie
+    const cookieEmail = document.cookie
+      .split(';')
+      .map(c => c.trim().split('='))
+      .find(([key]) => key === 'demo_session')?.[1]
+
+    if (!cookieEmail) return
+    const email = decodeURIComponent(cookieEmail)
+
+    // Validate against demo_users table in DB
+    fetch(`/api/demo/session?email=${encodeURIComponent(email)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.active) {
+          setDemoEmail(email)
+        } else if (data.expired && data.expiresAt) {
+          setDemoEmail(email)
+          setDemoExpired(true)
+        }
+      })
+      .catch(() => { })
+  }, [])
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-slate-200">
@@ -69,12 +96,23 @@ export function Header() {
 
           {/* Desktop CTAs */}
           <div className="hidden lg:flex items-center gap-4">
-            <Link href="/login" className="text-slate-600 hover:text-slate-900 font-medium">
-              Login
-            </Link>
-            <Link href="/signup/demo">
-              <Button>Try Instant Demo</Button>
-            </Link>
+            {demoEmail ? (
+              <Link href={`/demo/agent?email=${encodeURIComponent(demoEmail)}`}>
+                <Button className="flex items-center gap-2">
+                  <Bot className="w-4 h-4" />
+                  Agent Demo
+                </Button>
+              </Link>
+            ) : (
+              <>
+                <Link href="/login" className="text-slate-600 hover:text-slate-900 font-medium">
+                  Login
+                </Link>
+                <Link href="/signup/demo">
+                  <Button>Try Instant Demo</Button>
+                </Link>
+              </>
+            )}
           </div>
 
           {/* Mobile Menu Button */}
@@ -119,12 +157,23 @@ export function Header() {
               </div>
 
               <div className="border-t border-slate-200 pt-4 mt-2 flex flex-col gap-3">
-                <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
-                  <Button variant="outline" className="w-full">Login</Button>
-                </Link>
-                <Link href="/signup/demo" onClick={() => setMobileMenuOpen(false)}>
-                  <Button className="w-full">Try Instant Demo</Button>
-                </Link>
+                {demoEmail ? (
+                  <Link href={`/demo/agent?email=${encodeURIComponent(demoEmail)}`} onClick={() => setMobileMenuOpen(false)}>
+                    <Button className="w-full flex items-center justify-center gap-2">
+                      <Bot className="w-4 h-4" />
+                      Agent Demo
+                    </Button>
+                  </Link>
+                ) : (
+                  <>
+                    <Link href="/login" onClick={() => setMobileMenuOpen(false)}>
+                      <Button variant="outline" className="w-full">Login</Button>
+                    </Link>
+                    <Link href="/signup/demo" onClick={() => setMobileMenuOpen(false)}>
+                      <Button className="w-full">Try Instant Demo</Button>
+                    </Link>
+                  </>
+                )}
               </div>
             </div>
           </Container>

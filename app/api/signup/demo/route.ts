@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { createDemoUser, setDemoSessionCookie } from '@/lib/demo-session'
 
 /**
  * =============================================================================
@@ -45,6 +46,15 @@ export async function POST(request: NextRequest) {
     }
 
     console.log('Demo signup received:', { email })
+
+    // Create demo user in database + set session cookie
+    try {
+      await createDemoUser(email)
+      setDemoSessionCookie(email)
+    } catch (dbError) {
+      console.error('DB error during signup:', dbError)
+      // Continue even if DB fails — user can still access demo
+    }
 
     // =========================================================================
     // TODO: Add your integrations below

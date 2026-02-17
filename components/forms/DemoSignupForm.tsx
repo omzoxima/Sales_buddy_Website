@@ -51,8 +51,8 @@ export function DemoSignupForm() {
         throw new Error(result.error || 'Something went wrong')
       }
 
-      // Redirect to demo or verification page
-      router.push('/verify?type=demo&email=' + encodeURIComponent(data.email))
+      // Redirect to demo experience page
+      router.push('/demo/experience?email=' + encodeURIComponent(data.email))
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
