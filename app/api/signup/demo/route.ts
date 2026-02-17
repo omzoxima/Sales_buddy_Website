@@ -20,12 +20,13 @@ import { createDemoUser, setDemoSessionCookie } from '@/lib/demo-session'
 
 interface DemoSignupRequest {
   email: string
+  marketingOptin?: boolean
 }
 
 export async function POST(request: NextRequest) {
   try {
     const body: DemoSignupRequest = await request.json()
-    const { email } = body
+    const { email, marketingOptin } = body
 
     // Validate email
     if (!email || !email.includes('@')) {
@@ -49,7 +50,7 @@ export async function POST(request: NextRequest) {
 
     // Create demo user in database + set session cookie
     try {
-      await createDemoUser(email)
+      await createDemoUser(email, marketingOptin || false)
       setDemoSessionCookie(email)
     } catch (dbError) {
       console.error('DB error during signup:', dbError)

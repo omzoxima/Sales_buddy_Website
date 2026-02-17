@@ -1,16 +1,38 @@
 'use client'
 
-import { useState, useRef } from 'react'
+import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { Play, Pause, X } from 'lucide-react'
+import { Play, Pause, X, CheckCircle } from 'lucide-react'
 import { Button, Container } from '@/components/ui'
 import { HERO } from '@/lib/constants'
 
 export function Hero() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [showModal, setShowModal] = useState(false)
+  const [demoActive, setDemoActive] = useState(false)
+  const [showDemoMsg, setShowDemoMsg] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const modalVideoRef = useRef<HTMLVideoElement>(null)
+
+  // Check if demo is already active
+  useEffect(() => {
+    const cookieEmail = document.cookie
+      .split(';')
+      .map(c => c.trim().split('='))
+      .find(([key]) => key === 'demo_session')?.[1]
+
+    if (!cookieEmail) return
+    const email = decodeURIComponent(cookieEmail)
+
+    fetch(`/api/demo/session?email=${encodeURIComponent(email)}`)
+      .then(res => res.json())
+      .then(data => {
+        if (data.active) {
+          setDemoActive(true)
+        }
+      })
+      .catch(() => { })
+  }, [])
 
   const handlePlayInline = () => {
     if (videoRef.current) {
@@ -39,6 +61,14 @@ export function Hero() {
     }
   }
 
+  const handleDemoClick = (e: React.MouseEvent) => {
+    if (demoActive) {
+      e.preventDefault()
+      setShowDemoMsg(true)
+      setTimeout(() => setShowDemoMsg(false), 4000)
+    }
+  }
+
   return (
     <>
       <section className="bg-gradient-hero py-16 lg:py-24">
@@ -60,12 +90,25 @@ export function Hero() {
             </p>
 
             {/* CTAs */}
-            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-              <Link href="/signup/demo">
-                <Button size="lg" className="w-full sm:w-auto">
-                  {HERO.primaryCta} →
-                </Button>
-              </Link>
+            <div className="flex flex-col sm:flex-row gap-4 justify-center mb-4">
+              <div className="relative">
+                <Link
+                  href="/signup/demo"
+                  onClick={handleDemoClick}
+                  className={demoActive ? 'pointer-events-auto' : ''}
+                >
+                  <Button
+                    size="lg"
+                    className={`w-full sm:w-auto transition-all duration-300 ${demoActive
+                        ? 'opacity-50 cursor-not-allowed !bg-slate-400 !shadow-none'
+                        : ''
+                      }`}
+                  >
+                    {demoActive && <CheckCircle className="w-4 h-4 mr-2" />}
+                    {HERO.primaryCta} →
+                  </Button>
+                </Link>
+              </div>
               <Button
                 variant="ghost"
                 size="lg"
@@ -76,6 +119,14 @@ export function Hero() {
                 {HERO.secondaryCta}
               </Button>
             </div>
+
+            {/* Demo already active message */}
+            {showDemoMsg && (
+              <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-5 py-2 text-sm font-medium mb-4 animate-fadeIn">
+                <CheckCircle className="w-4 h-4" />
+                Your demo is already active! Use the <strong className="text-emerald-800">Live Agent</strong> button in the header.
+              </div>
+            )}
 
             {/* Trust Text */}
             <p className="text-sm text-slate-500">
@@ -137,6 +188,14 @@ export function Hero() {
           </div>
         </div>
       )}
+
+      <style jsx global>{`
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(-5px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+      `}</style>
     </>
   )
 }

@@ -2,8 +2,9 @@
 
 import { useState, useEffect } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { FileText, ExternalLink, Bot, ChevronRight } from 'lucide-react'
+import { FileText, ExternalLink, Bot, ChevronRight, Sparkles, Clock, Brain, BarChart3 } from 'lucide-react'
 import { Container, Card, Button } from '@/components/ui'
+import { GuidedTour } from '@/components/demo/GuidedTour'
 
 interface Document {
     id: string
@@ -21,14 +22,26 @@ export default function DemoExperiencePage() {
     const searchParams = useSearchParams()
     const router = useRouter()
     const email = searchParams.get('email') || ''
+    const isWelcome = searchParams.get('welcome') === 'true'
     const [documents, setDocuments] = useState<Document[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [previewDoc, setPreviewDoc] = useState<Document | null>(null)
+    const [showWelcome, setShowWelcome] = useState(false)
+    const [showTour, setShowTour] = useState(false)
 
     useEffect(() => {
         if (!email) {
             router.push('/signup/demo')
             return
+        }
+
+        // Show welcome modal only on first signup for this email
+        if (isWelcome) {
+            const welcomeKey = `demo_welcomed_${email}`
+            if (!localStorage.getItem(welcomeKey)) {
+                setShowWelcome(true)
+                localStorage.setItem(welcomeKey, 'true')
+            }
         }
 
         async function fetchDocuments() {
@@ -46,10 +59,78 @@ export default function DemoExperiencePage() {
         }
 
         fetchDocuments()
-    }, [email, router])
+    }, [email, router, isWelcome])
 
     return (
         <section className="min-h-[calc(100vh-5rem)] bg-slate-50">
+            {/* Welcome Modal */}
+            {showWelcome && (
+                <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100] flex items-center justify-center p-4" style={{ animation: 'fadeIn 0.3s ease-out' }}>
+                    <div className="bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden" style={{ animation: 'slideUp 0.4s ease-out' }}>
+                        {/* Top gradient bar */}
+                        <div className="h-2 bg-gradient-to-r from-emerald-400 via-teal-500 to-cyan-500" />
+
+                        <div className="px-8 py-8 text-center">
+                            {/* Celebration icon */}
+                            <div className="relative w-20 h-20 mx-auto mb-6">
+                                <div className="absolute inset-0 bg-gradient-to-br from-emerald-400 to-teal-500 rounded-full opacity-20 animate-ping" style={{ animationDuration: '2s' }} />
+                                <div className="relative w-20 h-20 rounded-full bg-gradient-to-br from-emerald-500 to-teal-600 flex items-center justify-center shadow-lg shadow-emerald-500/30">
+                                    <Sparkles className="w-10 h-10 text-white" />
+                                </div>
+                            </div>
+
+                            <h2 className="text-2xl font-bold text-slate-900 mb-2">
+                                🎉 Your Demo Starts Now!
+                            </h2>
+                            <p className="text-slate-500 text-sm mb-6">
+                                Welcome aboard! You have <strong className="text-emerald-600">7 days</strong> of full access to explore SalesBuddy AI.
+                            </p>
+
+                            {/* Feature highlights */}
+                            <div className="space-y-3 mb-8 text-left">
+                                <div className="flex items-center gap-3 bg-gradient-to-r from-blue-50 to-cyan-50 rounded-xl px-4 py-3 border border-blue-100/60">
+                                    <div className="w-9 h-9 rounded-lg bg-blue-500 flex items-center justify-center flex-shrink-0">
+                                        <Brain className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-800">AI-Powered Chatbot</p>
+                                        <p className="text-xs text-slate-500">Ask anything about your products</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3 bg-gradient-to-r from-amber-50 to-orange-50 rounded-xl px-4 py-3 border border-amber-100/60">
+                                    <div className="w-9 h-9 rounded-lg bg-amber-500 flex items-center justify-center flex-shrink-0">
+                                        <BarChart3 className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-800">CRM Insights</p>
+                                        <p className="text-xs text-slate-500">Real-time data from Salesforce</p>
+                                    </div>
+                                </div>
+                                <div className="flex items-center gap-3 bg-gradient-to-r from-violet-50 to-purple-50 rounded-xl px-4 py-3 border border-violet-100/60">
+                                    <div className="w-9 h-9 rounded-lg bg-violet-500 flex items-center justify-center flex-shrink-0">
+                                        <Clock className="w-5 h-5 text-white" />
+                                    </div>
+                                    <div>
+                                        <p className="text-sm font-semibold text-slate-800">Chat History Saved</p>
+                                        <p className="text-xs text-slate-500">Pick up right where you left off</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <button
+                                onClick={() => { setShowWelcome(false); setShowTour(true); }}
+                                className="w-full py-3 px-6 bg-gradient-to-r from-emerald-500 to-teal-600 text-white font-semibold rounded-xl shadow-lg shadow-emerald-500/25 hover:shadow-xl hover:shadow-emerald-500/35 transition-all duration-200 hover:scale-[1.02] active:scale-[0.98]"
+                            >
+                                Get Started 🚀
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+            {/* Guided Tour (shows after welcome is dismissed) */}
+            {showTour && <GuidedTour onClose={() => setShowTour(false)} />}
+
             {/* Video Section */}
             <div className="bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative">
                 <Container>
@@ -173,7 +254,7 @@ export default function DemoExperiencePage() {
                                     <Bot className="w-8 h-8 text-primary-600" />
                                 </div>
                                 <h3 className="text-xl font-bold text-slate-900 mb-2">
-                                    Try Our AI Sales Agent
+                                    Welcome to our Live Agent
                                 </h3>
                                 <p className="text-slate-600 mb-6 max-w-md mx-auto">
                                     Chat with our AI-powered sales assistant and experience real-time
@@ -189,7 +270,7 @@ export default function DemoExperiencePage() {
                                     className="inline-flex items-center gap-2"
                                 >
                                     <Bot className="w-5 h-5" />
-                                    Agent Demo
+                                    Live Agent
                                     <ChevronRight className="w-4 h-4" />
                                 </Button>
                             </div>
@@ -244,6 +325,18 @@ export default function DemoExperiencePage() {
                     </div>
                 </div>
             )}
+
+            {/* Modal animations */}
+            <style jsx>{`
+                @keyframes fadeIn {
+                    from { opacity: 0; }
+                    to { opacity: 1; }
+                }
+                @keyframes slideUp {
+                    from { transform: translateY(20px); opacity: 0; }
+                    to { transform: translateY(0); opacity: 1; }
+                }
+            `}</style>
         </section>
     )
 }

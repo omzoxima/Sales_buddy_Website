@@ -62,12 +62,18 @@ export async function getClient(): Promise<PoolClient> {
 export async function initDatabase(): Promise<void> {
     await query(`
     CREATE TABLE IF NOT EXISTS demo_users (
-      id          SERIAL PRIMARY KEY,
-      email       VARCHAR(255) UNIQUE NOT NULL,
-      created_at  TIMESTAMP DEFAULT NOW(),
-      expires_at  TIMESTAMP NOT NULL,
-      is_active   BOOLEAN DEFAULT TRUE
+      id              SERIAL PRIMARY KEY,
+      email           VARCHAR(255) UNIQUE NOT NULL,
+      created_at      TIMESTAMP DEFAULT NOW(),
+      expires_at      TIMESTAMP NOT NULL,
+      is_active       BOOLEAN DEFAULT TRUE,
+      marketing_optin BOOLEAN DEFAULT FALSE
     )
+  `)
+
+    // Migration: add marketing_optin if table already exists without it
+    await query(`
+    ALTER TABLE demo_users ADD COLUMN IF NOT EXISTS marketing_optin BOOLEAN DEFAULT FALSE
   `)
 
     await query(`

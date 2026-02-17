@@ -66,19 +66,20 @@ export function clearDemoSessionCookie(): void {
 /**
  * Create or update a demo user in the database
  */
-export async function createDemoUser(email: string): Promise<DemoUser> {
+export async function createDemoUser(email: string, marketingOptin: boolean = false): Promise<DemoUser> {
     const expiresAt = new Date()
     expiresAt.setDate(expiresAt.getDate() + DEMO_DURATION_DAYS)
 
     // Upsert: if user already exists, update expires_at
     const rows = await query<DemoUser>(
-        `INSERT INTO demo_users (email, expires_at, is_active)
-     VALUES ($1, $2, TRUE)
+        `INSERT INTO demo_users (email, expires_at, is_active, marketing_optin)
+     VALUES ($1, $2, TRUE, $3)
      ON CONFLICT (email) DO UPDATE SET
        expires_at = GREATEST(demo_users.expires_at, $2),
-       is_active = TRUE
+       is_active = TRUE,
+       marketing_optin = $3
      RETURNING *`,
-        [email, expiresAt.toISOString()]
+        [email, expiresAt.toISOString(), marketingOptin]
     )
 
     return rows[0]

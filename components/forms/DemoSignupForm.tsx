@@ -8,6 +8,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Button, Input, Alert } from '@/components/ui'
 import { isFreeEmail } from '@/lib/utils'
+import { Shield, Mail } from 'lucide-react'
 
 const schema = z.object({
   email: z
@@ -25,6 +26,8 @@ export function DemoSignupForm() {
   const router = useRouter()
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [error, setError] = useState<string | null>(null)
+  const [agreedToTerms, setAgreedToTerms] = useState(false)
+  const [marketingOptin, setMarketingOptin] = useState(false)
 
   const {
     register,
@@ -35,6 +38,11 @@ export function DemoSignupForm() {
   })
 
   const onSubmit = async (data: FormData) => {
+    if (!agreedToTerms) {
+      setError('Please accept the Terms of Service to continue')
+      return
+    }
+
     setIsSubmitting(true)
     setError(null)
 
@@ -42,7 +50,7 @@ export function DemoSignupForm() {
       const response = await fetch('/api/signup/demo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify(data),
+        body: JSON.stringify({ ...data, marketingOptin }),
       })
 
       const result = await response.json()
@@ -51,8 +59,8 @@ export function DemoSignupForm() {
         throw new Error(result.error || 'Something went wrong')
       }
 
-      // Redirect to demo experience page
-      router.push('/demo/experience?email=' + encodeURIComponent(data.email))
+      // Full page redirect so Header re-mounts with the new cookie
+      window.location.href = '/demo/experience?email=' + encodeURIComponent(data.email) + '&welcome=true'
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Something went wrong')
     } finally {
@@ -77,20 +85,70 @@ export function DemoSignupForm() {
         autoFocus
       />
 
-      <Button type="submit" className="w-full" size="lg" isLoading={isSubmitting}>
+      {/* Terms & Conditions */}
+      <div className="space-y-3 pt-1">
+        <label className="flex items-start gap-3 cursor-pointer group">
+          <div className="relative mt-0.5">
+            <input
+              type="checkbox"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-5 h-5 rounded-md border-2 border-slate-300 peer-checked:border-primary-500 peer-checked:bg-primary-500 transition-all duration-200 flex items-center justify-center group-hover:border-primary-400">
+              {agreedToTerms && (
+                <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </div>
+          </div>
+          <span className="text-sm text-slate-600 leading-snug">
+            <Shield className="w-3.5 h-3.5 inline-block text-primary-500 mr-1 -mt-0.5" />
+            I agree to the{' '}
+            <Link href="/terms" className="text-primary-600 hover:underline font-medium">
+              Terms of Service
+            </Link>{' '}
+            and{' '}
+            <Link href="/privacy" className="text-primary-600 hover:underline font-medium">
+              Privacy Policy
+            </Link>
+          </span>
+        </label>
+
+        {/* Marketing Opt-in */}
+        <label className="flex items-start gap-3 cursor-pointer group">
+          <div className="relative mt-0.5">
+            <input
+              type="checkbox"
+              checked={marketingOptin}
+              onChange={(e) => setMarketingOptin(e.target.checked)}
+              className="sr-only peer"
+            />
+            <div className="w-5 h-5 rounded-md border-2 border-slate-300 peer-checked:border-primary-500 peer-checked:bg-primary-500 transition-all duration-200 flex items-center justify-center group-hover:border-primary-400">
+              {marketingOptin && (
+                <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
+                  <path strokeLinecap="round" strokeLinejoin="round" d="M5 13l4 4L19 7" />
+                </svg>
+              )}
+            </div>
+          </div>
+          <span className="text-sm text-slate-500 leading-snug">
+            <Mail className="w-3.5 h-3.5 inline-block text-slate-400 mr-1 -mt-0.5" />
+            I&apos;d like to receive product updates and marketing communications
+          </span>
+        </label>
+      </div>
+
+      <Button
+        type="submit"
+        className="w-full"
+        size="lg"
+        isLoading={isSubmitting}
+        disabled={!agreedToTerms}
+      >
         Start Instant Demo →
       </Button>
-
-      <p className="text-xs text-slate-500 text-center">
-        By continuing, you agree to our{' '}
-        <Link href="/terms" className="text-primary-600 hover:underline">
-          Terms of Service
-        </Link>{' '}
-        and{' '}
-        <Link href="/privacy" className="text-primary-600 hover:underline">
-          Privacy Policy
-        </Link>
-      </p>
 
       <p className="text-sm text-slate-600 text-center pt-2">
         Want to try with your own data?{' '}
