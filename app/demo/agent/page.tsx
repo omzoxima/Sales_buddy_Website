@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Send, Bot, User, ArrowLeft, Sparkles, MessageSquare, ShieldAlert, Clock, BookOpen, Users } from 'lucide-react'
+import { Send, Bot, User, ArrowLeft, Sparkles, MessageSquare, ShieldAlert, Clock, BookOpen, Users, Star, X } from 'lucide-react'
 import { GuidedTour } from '@/components/demo/GuidedTour'
 
 interface Message {
@@ -33,6 +33,12 @@ export default function AgentDemoPage() {
     const [sessionStatus, setSessionStatus] = useState<SessionStatus | null>(null)
     const [isExpired, setIsExpired] = useState(false)
     const [showTour, setShowTour] = useState(false)
+    const [showFeedback, setShowFeedback] = useState(false)
+    const [feedbackRating, setFeedbackRating] = useState(0)
+    const [feedbackHover, setFeedbackHover] = useState(0)
+    const [feedbackComment, setFeedbackComment] = useState('')
+    const [feedbackSubmitting, setFeedbackSubmitting] = useState(false)
+    const [feedbackSuccess, setFeedbackSuccess] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
     const chatContainerRef = useRef<HTMLDivElement>(null)
@@ -261,6 +267,31 @@ export default function AgentDemoPage() {
         }
     }
 
+    const submitFeedback = async () => {
+        if (feedbackRating === 0) return
+        setFeedbackSubmitting(true)
+        try {
+            const res = await fetch('/api/demo/feedback', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email, rating: feedbackRating, comment: feedbackComment }),
+            })
+            if (res.ok) {
+                setFeedbackSuccess(true)
+                setTimeout(() => {
+                    setShowFeedback(false)
+                    setFeedbackRating(0)
+                    setFeedbackComment('')
+                    setFeedbackSuccess(false)
+                }, 2000)
+            }
+        } catch {
+            console.error('Failed to submit feedback')
+        } finally {
+            setFeedbackSubmitting(false)
+        }
+    }
+
     const formatContent = (content: string) => {
         if (!content) return ''
         return content
@@ -408,8 +439,16 @@ export default function AgentDemoPage() {
                                     <BookOpen className="w-3.5 h-3.5" />
                                     <span className="hidden sm:inline">Guided Tour</span>
                                 </button>
+                                <button
+                                    onClick={() => setShowFeedback(true)}
+                                    className="flex items-center gap-1.5 text-xs font-medium text-amber-600 hover:text-amber-700 bg-amber-50 hover:bg-amber-100 border border-amber-200 px-3 py-1.5 rounded-lg transition-all duration-200"
+                                    title="Give Feedback"
+                                >
+                                    <MessageSquare className="w-3.5 h-3.5" />
+                                    <span className="hidden sm:inline">Feedback</span>
+                                </button>
                                 <a
-                                    href="/contact"
+                                    href={`/contact?email=${encodeURIComponent(email)}`}
                                     className="flex items-center gap-1.5 text-xs font-medium text-slate-600 hover:text-slate-700 bg-slate-50 hover:bg-slate-100 border border-slate-200 px-3 py-1.5 rounded-lg transition-all duration-200"
                                     title="Connect to Team"
                                 >
@@ -562,6 +601,87 @@ export default function AgentDemoPage() {
                 }
             `}</style>
             </section>
+
+            {/* Feedback Modal */}
+            {showFeedback && (
+                <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+                    <div className="absolute inset-0 bg-black/40 backdrop-blur-sm" onClick={() => { if (!feedbackSubmitting) { setShowFeedback(false); setFeedbackRating(0); setFeedbackComment(''); setFeedbackSuccess(false) } }} />
+                    <div className="relative bg-white rounded-2xl shadow-2xl w-full max-w-md p-6 animate-fadeIn">
+                        <button
+                            onClick={() => { setShowFeedback(false); setFeedbackRating(0); setFeedbackComment(''); setFeedbackSuccess(false) }}
+                            className="absolute top-4 right-4 w-8 h-8 rounded-lg hover:bg-slate-100 flex items-center justify-center text-slate-400 hover:text-slate-600 transition-all"
+                        >
+                            <X className="w-4 h-4" />
+                        </button>
+
+                        {feedbackSuccess ? (
+                            <div className="text-center py-8">
+                                <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-emerald-400 to-emerald-600 flex items-center justify-center mx-auto mb-4 shadow-lg shadow-emerald-500/25">
+                                    <span className="text-2xl text-white">✓</span>
+                                </div>
+                                <h3 className="text-xl font-bold text-slate-900 mb-2">Thank you!</h3>
+                                <p className="text-slate-500 text-sm">Your feedback helps us improve SalesBuddy.</p>
+                            </div>
+                        ) : (
+                            <>
+                                <div className="text-center mb-6">
+                                    <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-amber-400 to-orange-500 flex items-center justify-center mx-auto mb-3 shadow-lg shadow-amber-500/25">
+                                        <MessageSquare className="w-6 h-6 text-white" />
+                                    </div>
+                                    <h3 className="text-lg font-bold text-slate-900">How&apos;s your experience?</h3>
+                                    <p className="text-slate-500 text-sm mt-1">Rate your experience with SalesBuddy AI</p>
+                                </div>
+
+                                {/* Star Rating */}
+                                <div className="flex justify-center gap-2 mb-6">
+                                    {[1, 2, 3, 4, 5].map((star) => (
+                                        <button
+                                            key={star}
+                                            onClick={() => setFeedbackRating(star)}
+                                            onMouseEnter={() => setFeedbackHover(star)}
+                                            onMouseLeave={() => setFeedbackHover(0)}
+                                            className="transition-all duration-150 hover:scale-110 active:scale-95"
+                                        >
+                                            <Star
+                                                className={`w-9 h-9 transition-colors ${star <= (feedbackHover || feedbackRating)
+                                                    ? 'text-amber-400 fill-amber-400'
+                                                    : 'text-slate-200'
+                                                    }`}
+                                            />
+                                        </button>
+                                    ))}
+                                </div>
+
+                                {/* Comment */}
+                                <textarea
+                                    value={feedbackComment}
+                                    onChange={(e) => setFeedbackComment(e.target.value)}
+                                    placeholder="Tell us more about your experience... (optional)"
+                                    rows={3}
+                                    className="w-full px-4 py-3 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-900 placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-amber-500/30 focus:border-amber-400 resize-none transition-all"
+                                />
+
+                                {/* Actions */}
+                                <div className="flex gap-3 mt-5">
+                                    <button
+                                        onClick={() => { setShowFeedback(false); setFeedbackRating(0); setFeedbackComment('') }}
+                                        className="flex-1 px-4 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-medium rounded-xl text-sm transition-all"
+                                    >
+                                        Cancel
+                                    </button>
+                                    <button
+                                        onClick={submitFeedback}
+                                        disabled={feedbackRating === 0 || feedbackSubmitting}
+                                        className="flex-1 px-4 py-2.5 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 disabled:opacity-40 disabled:cursor-not-allowed text-white font-medium rounded-xl text-sm shadow-md shadow-amber-500/20 transition-all active:scale-95"
+                                    >
+                                        {feedbackSubmitting ? 'Submitting...' : 'Submit Feedback'}
+                                    </button>
+                                </div>
+                            </>
+                        )}
+                    </div>
+                </div>
+            )}
         </>
     )
 }

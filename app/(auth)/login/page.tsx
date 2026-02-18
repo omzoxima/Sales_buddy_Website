@@ -17,7 +17,7 @@ export default function LoginPage() {
               Welcome Back
             </h1>
             <p className="text-slate-600">
-              Log in to your account
+              Enter your email and we&apos;ll send you a verification code
             </p>
           </div>
           <LoginForm />

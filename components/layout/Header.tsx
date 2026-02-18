@@ -8,30 +8,42 @@ import { Button, Container } from '@/components/ui'
 import { NAV_LINKS, NAV_RESOURCES, SITE_CONFIG } from '@/lib/constants'
 import { cn } from '@/lib/utils'
 
+// Read cookie synchronously to avoid flash
+function getCookieEmail(): string | null {
+  if (typeof document === 'undefined') return null
+  const match = document.cookie
+    .split(';')
+    .map(c => c.trim().split('='))
+    .find(([key]) => key === 'demo_session')
+  return match?.[1] ? decodeURIComponent(match[1]) : null
+}
+
 export function Header() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
   const [resourcesOpen, setResourcesOpen] = useState(false)
   const [demoEmail, setDemoEmail] = useState<string | null>(null)
   const [demoExpired, setDemoExpired] = useState(false)
 
-  // Check demo user in database via session API
+  // Check session — read cookie first for instant state, then verify via API
   useEffect(() => {
-    const cookieEmail = document.cookie
-      .split(';')
-      .map(c => c.trim().split('='))
-      .find(([key]) => key === 'demo_session')?.[1]
-
-    if (!cookieEmail) return
-    const email = decodeURIComponent(cookieEmail)
+    const email = getCookieEmail()
+    if (!email) {
+      setDemoEmail(null)
+      return
+    }
+    // Set immediately from cookie (avoids flash)
+    setDemoEmail(email)
 
     fetch(`/api/demo/session?email=${encodeURIComponent(email)}`)
       .then(res => res.json())
       .then(data => {
         if (data.active) {
           setDemoEmail(email)
-        } else if (data.expired && data.expiresAt) {
-          setDemoEmail(email)
+        } else if (data.expired) {
+          setDemoEmail(null)
           setDemoExpired(true)
+        } else {
+          setDemoEmail(null)
         }
       })
       .catch(() => { })

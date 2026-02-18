@@ -25,22 +25,25 @@ export function CTASection({
   const [demoActive, setDemoActive] = useState(false)
   const [showDemoMsg, setShowDemoMsg] = useState(false)
 
-  // Check if demo is already active
+  // Check session — read cookie first for instant state, then verify via API
   useEffect(() => {
     const cookieEmail = document.cookie
       .split(';')
       .map(c => c.trim().split('='))
       .find(([key]) => key === 'demo_session')?.[1]
 
-    if (!cookieEmail) return
+    if (!cookieEmail) {
+      setDemoActive(false)
+      return
+    }
     const email = decodeURIComponent(cookieEmail)
+    // Set immediately from cookie (avoids flash)
+    setDemoActive(true)
 
     fetch(`/api/demo/session?email=${encodeURIComponent(email)}`)
       .then(res => res.json())
       .then(data => {
-        if (data.active) {
-          setDemoActive(true)
-        }
+        setDemoActive(data.active === true)
       })
       .catch(() => { })
   }, [])
@@ -69,8 +72,8 @@ export function CTASection({
               <Button
                 size="lg"
                 className={`w-full sm:w-auto transition-all duration-300 ${demoActive
-                    ? 'opacity-50 cursor-not-allowed !bg-slate-500 !shadow-none'
-                    : ''
+                  ? 'opacity-50 cursor-not-allowed !bg-slate-500 !shadow-none'
+                  : ''
                   }`}
               >
                 {demoActive && <CheckCircle className="w-4 h-4 mr-2" />}

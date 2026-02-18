@@ -38,7 +38,8 @@ export async function POST(request: NextRequest) {
             )
         }
 
-        const agentUrl = process.env.AGENT_API_URL || DEFAULT_AGENT_URL
+        const agentUrl: string = process.env.AGENT_API_URL ?? DEFAULT_AGENT_URL
+        console.log('Agent URL being used:', agentUrl)
 
         // Call the real agent endpoint
         const agentResponse = await fetch(agentUrl, {
@@ -48,7 +49,7 @@ export async function POST(request: NextRequest) {
         })
 
         if (!agentResponse.ok || !agentResponse.body) {
-            console.error('Agent API error:', agentResponse.status)
+            console.log('Agent API error:', agentResponse.status, agentUrl)
             return new Response(
                 JSON.stringify({ error: 'Agent is currently unavailable' }),
                 { status: 502, headers: { 'Content-Type': 'application/json' } }

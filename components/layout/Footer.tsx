@@ -19,7 +19,7 @@ export function Footer() {
                 alt={SITE_CONFIG.name}
                 width={140}
                 height={40}
-                className="h-8 w-auto"
+                className="h-8 w-auto brightness-0 invert"
               />
             </Link>
             <p className="text-slate-400 text-sm mb-4">

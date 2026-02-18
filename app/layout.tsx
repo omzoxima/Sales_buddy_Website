@@ -1,6 +1,7 @@
 import type { Metadata } from 'next'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
+import { FeedbackButton } from '@/components/ui/FeedbackButton'
 import { SITE_CONFIG } from '@/lib/constants'
 import '@/styles/globals.css'
 
@@ -51,6 +52,7 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
+        <FeedbackButton />
       </body>
     </html>
   )
