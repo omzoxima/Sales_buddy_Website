@@ -64,14 +64,14 @@ export function FeedbackButton() {
 
     return (
         <>
-            {/* Floating Feedback Button */}
+            {/* Floating Feedback Button — icon only on mobile, text on desktop */}
             <button
                 onClick={() => setShowFeedback(true)}
-                className="fixed bottom-6 right-6 z-40 flex items-center gap-2 px-5 py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-full shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-all duration-300 active:scale-95 group"
+                className="fixed bottom-4 right-4 md:bottom-6 md:right-6 z-40 flex items-center justify-center w-12 h-12 md:w-auto md:h-auto md:gap-2 md:px-5 md:py-3 bg-gradient-to-r from-amber-500 to-orange-500 hover:from-amber-600 hover:to-orange-600 text-white font-semibold rounded-full shadow-lg shadow-amber-500/30 hover:shadow-xl hover:shadow-amber-500/40 transition-all duration-300 active:scale-95 group"
                 title="Give Feedback"
             >
                 <MessageSquare className="w-5 h-5 group-hover:rotate-6 transition-transform" />
-                <span className="text-sm">Feedback</span>
+                <span className="hidden md:inline text-sm">Feedback</span>
             </button>
 
             {/* Feedback Modal */}

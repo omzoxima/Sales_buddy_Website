@@ -38,7 +38,7 @@ export async function POST(request: NextRequest) {
             // Demo users CAN upgrade to trial — no blocking here
         }
 
-        // ── DEMO SIGNUP: block existing demo users and trial users
+        // ── DEMO SIGNUP: block expired demo users, let active users continue
         if (signupType === 'demo') {
             const existingDemo = await query<{ email: string; is_active: boolean; expires_at: string }>(
                 'SELECT email, is_active, expires_at FROM demo_users WHERE email = $1',
@@ -53,10 +53,13 @@ export async function POST(request: NextRequest) {
                         { status: 403 }
                     )
                 } else {
-                    return NextResponse.json(
-                        { error: 'A demo is already active for this email. Please check your inbox or use a different email.' },
-                        { status: 403 }
-                    )
+                    // Active user — let them continue from where they left off
+                    return NextResponse.json({
+                        success: true,
+                        existingUser: true,
+                        email,
+                        message: 'Welcome back! Redirecting to your demo...',
+                    })
                 }
             }
 

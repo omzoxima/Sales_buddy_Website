@@ -299,17 +299,17 @@ export default function DashboardPage() {
 
     return (
         <>
-            <section className="min-h-[calc(100vh-5rem)] bg-[#F0F4F8]">
-                <div className="max-w-6xl mx-auto px-4 sm:px-6 py-6 lg:py-8">
+            <section className="min-h-[calc(100vh-5rem)] bg-[#F0F4F8] overflow-x-hidden">
+                <div className="max-w-6xl mx-auto px-3 sm:px-6 py-4 sm:py-6 lg:py-8">
 
                     {/* ═══════════════════════════════════════════ */}
                     {/* WELCOME HEADER */}
                     {/* ═══════════════════════════════════════════ */}
-                    <div className="mb-6">
-                        <h1 className="text-2xl sm:text-3xl font-bold text-slate-800 flex items-center gap-2">
-                            <span className="text-2xl">👋</span> Welcome, {displayName}
+                    <div className="mb-4 sm:mb-6">
+                        <h1 className="text-xl sm:text-3xl font-bold text-slate-800 flex items-center gap-2">
+                            <span className="text-xl sm:text-2xl">👋</span> Welcome, {displayName}
                         </h1>
-                        <p className="text-slate-500 text-sm mt-1">
+                        <p className="text-slate-500 text-xs sm:text-sm mt-1">
                             {hasActiveSession
                                 ? `Your ${planLabel.toLowerCase()} ends in ${trialActive ? `${daysLeft} days` : `${hoursLeft} hours`}`
                                 : `Your ${planLabel.toLowerCase()} has expired`}
@@ -319,7 +319,7 @@ export default function DashboardPage() {
                     {/* ═══════════════════════════════════════════ */}
                     {/* HERO BANNER WITH CIRCULAR COUNTDOWN */}
                     {/* ═══════════════════════════════════════════ */}
-                    <div className={`relative rounded-2xl overflow-hidden mb-5 ${hasActiveSession
+                    <div className={`relative rounded-2xl overflow-hidden mb-4 sm:mb-5 ${hasActiveSession
                         ? 'bg-gradient-to-r from-teal-500 via-emerald-500 to-cyan-500'
                         : 'bg-gradient-to-r from-slate-600 via-slate-700 to-slate-800'
                         }`}>
@@ -329,30 +329,47 @@ export default function DashboardPage() {
                             <div className="absolute -bottom-20 -left-20 w-60 h-60 bg-white/5 rounded-full blur-2xl" />
                         </div>
 
-                        <div className="relative px-6 py-6 sm:px-8 sm:py-8 flex flex-col sm:flex-row items-center gap-6 sm:gap-8">
-                            {/* Circular countdown */}
+                        <div className="relative px-4 py-5 sm:px-8 sm:py-8 flex flex-col sm:flex-row items-center gap-4 sm:gap-8">
+                            {/* Circular countdown — smaller on mobile */}
                             <div className="flex-shrink-0">
-                                <CircularProgress percent={hasActiveSession ? progress : 0} size={140} stroke={8}>
-                                    <span className="text-4xl font-black text-white leading-none">
-                                        {hasActiveSession ? countdownNumber : 0}
-                                    </span>
-                                    <span className="text-xs text-white/70 font-medium mt-1">
-                                        {hasActiveSession ? countdownUnit : 'Expired'}
-                                    </span>
-                                    <span className="text-[10px] text-white/40 mt-0.5">
-                                        {planLabel} • {totalDuration}
-                                    </span>
-                                </CircularProgress>
+                                {/* Mobile size */}
+                                <div className="block sm:hidden">
+                                    <CircularProgress percent={hasActiveSession ? progress : 0} size={110} stroke={7}>
+                                        <span className="text-3xl font-black text-white leading-none">
+                                            {hasActiveSession ? countdownNumber : 0}
+                                        </span>
+                                        <span className="text-[10px] text-white/70 font-medium mt-1">
+                                            {hasActiveSession ? countdownUnit : 'Expired'}
+                                        </span>
+                                        <span className="text-[9px] text-white/40 mt-0.5">
+                                            {planLabel} • {totalDuration}
+                                        </span>
+                                    </CircularProgress>
+                                </div>
+                                {/* Desktop size */}
+                                <div className="hidden sm:block">
+                                    <CircularProgress percent={hasActiveSession ? progress : 0} size={140} stroke={8}>
+                                        <span className="text-4xl font-black text-white leading-none">
+                                            {hasActiveSession ? countdownNumber : 0}
+                                        </span>
+                                        <span className="text-xs text-white/70 font-medium mt-1">
+                                            {hasActiveSession ? countdownUnit : 'Expired'}
+                                        </span>
+                                        <span className="text-[10px] text-white/40 mt-0.5">
+                                            {planLabel} • {totalDuration}
+                                        </span>
+                                    </CircularProgress>
+                                </div>
                             </div>
 
                             {/* Info & Actions */}
-                            <div className="flex-1 text-center sm:text-left">
-                                <h2 className="text-xl sm:text-2xl font-bold text-white mb-2">
+                            <div className="flex-1 text-center sm:text-left min-w-0">
+                                <h2 className="text-lg sm:text-2xl font-bold text-white mb-1.5 sm:mb-2">
                                     {hasActiveSession
                                         ? `Your ${planLabel.toLowerCase()} ends in ${trialActive ? `${daysLeft} days` : `${hoursLeft} hours`}`
                                         : `Your ${planLabel.toLowerCase()} has expired`}
                                 </h2>
-                                <div className="flex flex-wrap items-center gap-4 text-white/70 text-sm mb-5">
+                                <div className="flex flex-wrap items-center justify-center sm:justify-start gap-3 sm:gap-4 text-white/70 text-xs sm:text-sm mb-4 sm:mb-5">
                                     <span className="flex items-center gap-1.5">
                                         <CalendarDays className="w-3.5 h-3.5" />
                                         Started: {formatDate(activeCreatedAt)}
@@ -423,7 +440,7 @@ export default function DashboardPage() {
                     {/* ═══════════════════════════════════════════ */}
                     {/* STATS BAR */}
                     {/* ═══════════════════════════════════════════ */}
-                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3 mb-4 sm:mb-6">
                         {/* Time Remaining */}
                         <div className="bg-white rounded-xl p-4 border border-slate-100 shadow-sm">
                             <div className="flex items-center gap-2 mb-2">
@@ -495,7 +512,7 @@ export default function DashboardPage() {
                     {/* ═══════════════════════════════════════════ */}
                     {/* BOTTOM GRID: RESOURCES + UPGRADE */}
                     {/* ═══════════════════════════════════════════ */}
-                    <div className="grid lg:grid-cols-2 gap-5">
+                    <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-5">
 
                         {/* ── Site Documents (from SharePoint) ── */}
                         <div className="bg-white rounded-2xl border border-slate-100 shadow-sm p-5">
@@ -565,7 +582,7 @@ export default function DashboardPage() {
                                 </h3>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-3">
+                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
                                 {/* Free Trial Card */}
                                 {(isDemoOnly || currentPlan === 'demo_expired') && (
                                     <Link href="/signup/trial" className="group">

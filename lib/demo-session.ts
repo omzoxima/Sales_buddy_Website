@@ -93,10 +93,9 @@ export async function createDemoUser(email: string, marketingOptin: boolean = fa
         const demoExpires = new Date(demo.expires_at);
         if (now > demoExpires || !demo.is_active) {
             throw new Error('Your demo expired. You cannot get any benefits of this. You can upgrade your plan.');
-        } else {
-            // Still active, just return the existing demo without extending time
-            return demo;
         }
+        // Still active — let user continue from where they left off
+        return demo;
     }
 
     // Creating new demo

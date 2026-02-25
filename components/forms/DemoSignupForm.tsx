@@ -76,6 +76,14 @@ export function DemoSignupForm() {
         throw new Error(result.error || 'Failed to send OTP')
       }
 
+      // Returning active user — skip OTP and redirect directly
+      if (result.existingUser) {
+        localStorage.setItem('user_email', data.email)
+        window.location.href =
+          '/demo/experience?email=' + encodeURIComponent(data.email)
+        return
+      }
+
       setEmail(data.email)
       setStep('otp')
       setCountdown(60)
