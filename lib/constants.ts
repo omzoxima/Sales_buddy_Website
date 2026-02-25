@@ -68,7 +68,7 @@ export const TRIAL_OPTIONS = [
       'AI learns your products in minutes',
       'Invite up to 5 team members',
     ],
-    details: '15 days • 5 users • 500 queries',
+    details: '10 minutes • 5 users • 500 queries',
     cta: 'Start Free Trial',
     href: '/signup/trial',
     color: 'trial' as const,

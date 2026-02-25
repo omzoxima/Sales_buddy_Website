@@ -65,8 +65,14 @@ export async function POST(request: NextRequest) {
         try {
             await createDemoUser(email, marketingOptin || false)
             setDemoSessionCookie(email)
-        } catch (dbError) {
-            console.error('DB error during user creation:', dbError)
+        } catch (error: any) {
+            console.error('DB error during user creation:', error)
+            if (error.message.includes('upgrade') || error.message.includes('cannot')) {
+                return NextResponse.json(
+                    { error: error.message },
+                    { status: 403 }
+                )
+            }
             // Continue even if DB fails — user verified successfully
         }
 

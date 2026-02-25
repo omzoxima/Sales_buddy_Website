@@ -17,7 +17,7 @@ export default function TrialSignupPage() {
               Start Your Free Trial
             </h1>
             <p className="text-slate-600">
-              15 days free. No credit card required.
+              Get Teams credentials for 10 minutes. No credit card required.
             </p>
           </div>
           <TrialSignupForm />

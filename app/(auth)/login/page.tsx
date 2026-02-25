@@ -14,7 +14,7 @@ export default function LoginPage() {
         <Card padding="lg" variant="elevated">
           <div className="text-center mb-6">
             <h1 className="text-2xl font-bold text-slate-900 mb-2">
-              Welcome Back
+              Welcome
             </h1>
             <p className="text-slate-600">
               Enter your email and we&apos;ll send you a verification code

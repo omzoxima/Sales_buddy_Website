@@ -92,8 +92,8 @@ export function LoginForm() {
     }
   }
 
-  const verifyOtp = async () => {
-    const code = otp.join('')
+  const verifyOtp = async (otpOverride?: string[]) => {
+    const code = (otpOverride || otp).join('')
     if (code.length !== 6) {
       setError('Please enter the complete 6-digit code')
       return
@@ -133,7 +133,7 @@ export function LoginForm() {
     }
 
     if (value && index === 5 && newOtp.every((d) => d !== '')) {
-      setTimeout(() => verifyOtp(), 100)
+      setTimeout(() => verifyOtp(newOtp), 100)
     }
   }
 
@@ -147,9 +147,10 @@ export function LoginForm() {
     e.preventDefault()
     const pasted = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, 6)
     if (pasted.length === 6) {
-      setOtp(pasted.split(''))
+      const pastedOtp = pasted.split('')
+      setOtp(pastedOtp)
       otpRefs.current[5]?.focus()
-      setTimeout(() => verifyOtp(), 100)
+      setTimeout(() => verifyOtp(pastedOtp), 100)
     }
   }
 
@@ -198,7 +199,7 @@ export function LoginForm() {
           className="w-full"
           size="lg"
           isLoading={isSubmitting}
-          onClick={verifyOtp}
+          onClick={() => verifyOtp()}
           disabled={otp.some((d) => d === '')}
         >
           Verify & Log In →

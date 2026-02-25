@@ -1,20 +1,22 @@
 import { cookies } from 'next/headers'
 import { query } from './db'
+import { nowIST } from './timezone'
 
 /**
  * =============================================================================
  * DEMO SESSION UTILITIES
  * =============================================================================
  *
- * Manages demo user sessions via cookies + PostgreSQL.
+ * Manages demo user sessions via user_email cookie (server-side) + PostgreSQL.
+ * Client-side uses localStorage for identification.
  *
- * Cookie: demo_session = email (HttpOnly, 7 days max-age)
+ * Cookie: user_email = email (server-side set for httpOnly access)
  *
  * =============================================================================
  */
 
-const COOKIE_NAME = 'demo_session'
-const DEMO_DURATION_DAYS = 7
+const COOKIE_NAME = 'user_email'
+const DEMO_DURATION_HOURS = 7 * 24  // 7 days
 
 interface DemoUser {
     id: number
@@ -50,7 +52,7 @@ export function setDemoSessionCookie(email: string): void {
         httpOnly: false,
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax',
-        maxAge: DEMO_DURATION_DAYS * 24 * 60 * 60, // 7 days in seconds
+        maxAge: Math.round(DEMO_DURATION_HOURS * 60 * 60), // 5 minutes in seconds
         path: '/',
     })
 }
@@ -67,17 +69,40 @@ export function clearDemoSessionCookie(): void {
  * Create or update a demo user in the database
  */
 export async function createDemoUser(email: string, marketingOptin: boolean = false): Promise<DemoUser> {
-    const expiresAt = new Date()
-    expiresAt.setDate(expiresAt.getDate() + DEMO_DURATION_DAYS)
+    // Check if user has already upgraded to trial
+    const trialRows = await query<{ email: string }>(
+        'SELECT email FROM trial_users WHERE email = $1',
+        [email]
+    )
+    if (trialRows.length > 0) {
+        throw new Error('You have already taken a trial and cannot start a new demo.');
+    }
 
-    // Upsert: if user already exists, update expires_at
+    const expiresAt = nowIST()
+    expiresAt.setHours(expiresAt.getHours() + DEMO_DURATION_HOURS)
+
+    // Check if demo already exists
+    const existingDemo = await query<DemoUser>(
+        'SELECT * FROM demo_users WHERE email = $1',
+        [email]
+    )
+
+    if (existingDemo.length > 0) {
+        const demo = existingDemo[0];
+        const now = nowIST();
+        const demoExpires = new Date(demo.expires_at);
+        if (now > demoExpires || !demo.is_active) {
+            throw new Error('Your demo expired. You cannot get any benefits of this. You can upgrade your plan.');
+        } else {
+            // Still active, just return the existing demo without extending time
+            return demo;
+        }
+    }
+
+    // Creating new demo
     const rows = await query<DemoUser>(
         `INSERT INTO demo_users (email, expires_at, is_active, marketing_optin)
      VALUES ($1, $2, TRUE, $3)
-     ON CONFLICT (email) DO UPDATE SET
-       expires_at = GREATEST(demo_users.expires_at, $2),
-       is_active = TRUE,
-       marketing_optin = $3
      RETURNING *`,
         [email, expiresAt.toISOString(), marketingOptin]
     )
@@ -105,7 +130,7 @@ export async function getSessionStatus(email: string): Promise<SessionStatus> {
     }
 
     const user = rows[0]
-    const now = new Date()
+    const now = nowIST()
     const expiresAt = new Date(user.expires_at)
     const expired = now > expiresAt || !user.is_active
     const daysRemaining = expired

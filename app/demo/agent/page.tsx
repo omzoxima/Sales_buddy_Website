@@ -39,10 +39,32 @@ export default function AgentDemoPage() {
     const [feedbackComment, setFeedbackComment] = useState('')
     const [feedbackSubmitting, setFeedbackSubmitting] = useState(false)
     const [feedbackSuccess, setFeedbackSuccess] = useState(false)
+    const [trialActive, setTrialActive] = useState(false)
     const messagesEndRef = useRef<HTMLDivElement>(null)
     const inputRef = useRef<HTMLInputElement>(null)
     const chatContainerRef = useRef<HTMLDivElement>(null)
     const shouldAutoScroll = useRef(true)
+
+    // All status from DATABASE — localStorage for email identification
+    useEffect(() => {
+        const userEmail = typeof window !== 'undefined' ? localStorage.getItem('user_email') : null
+
+        if (!userEmail) {
+            setTrialActive(false)
+            return
+        }
+
+        fetch(`/api/user/dashboard?email=${encodeURIComponent(userEmail)}`)
+            .then(res => res.json())
+            .then(data => {
+                if (data.trial?.active) {
+                    setTrialActive(true)
+                } else {
+                    setTrialActive(false)
+                }
+            })
+            .catch(() => { })
+    }, [])
 
     // Check session validity
     useEffect(() => {
@@ -344,17 +366,21 @@ export default function AgentDemoPage() {
                     </div>
                     <h1 className="text-2xl font-bold text-slate-900 mb-3">Demo Has Expired</h1>
                     <p className="text-slate-600 mb-2">
-                        Your 7-day demo access for <strong className="text-slate-800">{email}</strong> has ended.
+                        Your 5-minute demo access for <strong className="text-slate-800">{email}</strong> has ended.
                     </p>
                     <p className="text-slate-500 text-sm mb-8">
                         Contact our team to get full access or start a trial with your own data.
                     </p>
                     <div className="flex flex-col sm:flex-row gap-3 justify-center">
                         <button
-                            onClick={() => router.push('/signup/trial')}
-                            className="px-6 py-3 bg-gradient-to-r from-primary-600 to-primary-500 text-white font-semibold rounded-xl shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 transition-all active:scale-95"
+                            onClick={() => !trialActive && router.push('/signup/trial')}
+                            disabled={trialActive}
+                            className={`px-6 py-3 font-semibold rounded-xl transition-all ${trialActive
+                                ? 'bg-slate-400 text-white/70 cursor-not-allowed shadow-none'
+                                : 'bg-gradient-to-r from-primary-600 to-primary-500 text-white shadow-lg shadow-primary-500/25 hover:shadow-xl hover:shadow-primary-500/30 active:scale-95'
+                                }`}
                         >
-                            Start Free Trial
+                            {trialActive ? '✓ Trial Active' : 'Start Free Trial'}
                         </button>
                         <button
                             onClick={() => router.push('/contact')}

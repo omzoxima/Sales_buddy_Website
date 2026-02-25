@@ -2,6 +2,7 @@ import type { Metadata } from 'next'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { FeedbackButton } from '@/components/ui/FeedbackButton'
+import { ChatAgent } from '@/components/ui/ChatAgent'
 import { SITE_CONFIG } from '@/lib/constants'
 import '@/styles/globals.css'
 
@@ -53,6 +54,7 @@ export default function RootLayout({
         <main className="flex-1">{children}</main>
         <Footer />
         <FeedbackButton />
+        <ChatAgent />
       </body>
     </html>
   )

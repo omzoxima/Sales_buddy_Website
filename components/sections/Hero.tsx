@@ -2,7 +2,7 @@
 
 import { useState, useRef, useEffect } from 'react'
 import Link from 'next/link'
-import { Play, Pause, X, CheckCircle } from 'lucide-react'
+import { Play, Pause, X, CheckCircle, Lock } from 'lucide-react'
 import { Button, Container } from '@/components/ui'
 import { HERO } from '@/lib/constants'
 
@@ -10,29 +10,35 @@ export function Hero() {
   const [isPlaying, setIsPlaying] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [demoActive, setDemoActive] = useState(false)
+  const [trialActive, setTrialActive] = useState(false)
+  const [demoExpired, setDemoExpired] = useState(false)
   const [showDemoMsg, setShowDemoMsg] = useState(false)
   const videoRef = useRef<HTMLVideoElement>(null)
   const modalVideoRef = useRef<HTMLVideoElement>(null)
 
-  // Check session — read cookie first for instant state, then verify via API
+  // All status from DATABASE — localStorage for email identification
   useEffect(() => {
-    const cookieEmail = document.cookie
-      .split(';')
-      .map(c => c.trim().split('='))
-      .find(([key]) => key === 'demo_session')?.[1]
+    const userEmail = typeof window !== 'undefined' ? localStorage.getItem('user_email') : null
 
-    if (!cookieEmail) {
+    if (!userEmail) {
       setDemoActive(false)
       return
     }
-    const email = decodeURIComponent(cookieEmail)
-    // Set immediately from cookie (avoids flash)
-    setDemoActive(true)
 
-    fetch(`/api/demo/session?email=${encodeURIComponent(email)}`)
+    fetch(`/api/user/dashboard?email=${encodeURIComponent(userEmail)}`)
       .then(res => res.json())
       .then(data => {
-        setDemoActive(data.active === true)
+        if (data.trial?.registered) {
+          setDemoActive(false)
+          if (data.trial.active) setTrialActive(true)
+        } else if (data.demo?.active) {
+          setDemoActive(true)
+        } else if (data.demo?.expired) {
+          setDemoActive(false)
+          setDemoExpired(true)
+        } else {
+          setDemoActive(false)
+        }
       })
       .catch(() => { })
   }, [])
@@ -65,7 +71,7 @@ export function Hero() {
   }
 
   const handleDemoClick = (e: React.MouseEvent) => {
-    if (demoActive) {
+    if (demoActive || trialActive) {
       e.preventDefault()
       setShowDemoMsg(true)
       setTimeout(() => setShowDemoMsg(false), 4000)
@@ -96,19 +102,19 @@ export function Hero() {
             <div className="flex flex-col sm:flex-row gap-4 justify-center mb-4">
               <div className="relative">
                 <Link
-                  href="/signup/demo"
+                  href={trialActive ? "/dashboard" : "/signup/demo"}
                   onClick={handleDemoClick}
-                  className={demoActive ? 'pointer-events-auto' : ''}
                 >
                   <Button
                     size="lg"
-                    className={`w-full sm:w-auto transition-all duration-300 ${demoActive
+                    className={`w-full sm:w-auto transition-all duration-300 ${demoActive || trialActive
                       ? 'opacity-50 cursor-not-allowed !bg-slate-400 !shadow-none'
                       : ''
                       }`}
                   >
                     {demoActive && <CheckCircle className="w-4 h-4 mr-2" />}
-                    {HERO.primaryCta} →
+                    {trialActive && <Lock className="w-4 h-4 mr-2" />}
+                    {trialActive ? 'View Dashboard' : HERO.primaryCta} →
                   </Button>
                 </Link>
               </div>
@@ -126,8 +132,11 @@ export function Hero() {
             {/* Demo already active message */}
             {showDemoMsg && (
               <div className="inline-flex items-center gap-2 bg-emerald-50 text-emerald-700 border border-emerald-200 rounded-full px-5 py-2 text-sm font-medium mb-4 animate-fadeIn">
-                <CheckCircle className="w-4 h-4" />
-                Your demo is already active! Use the <strong className="text-emerald-800">Live Agent</strong> button in the header.
+                {trialActive ? (
+                  <><CheckCircle className="w-4 h-4" /> Your Trial is active! Demo access is restricted.</>
+                ) : (
+                  <><CheckCircle className="w-4 h-4" /> Your demo is already active! Use the <strong className="text-emerald-800">Live Agent</strong> button in the header.</>
+                )}
               </div>
             )}
 

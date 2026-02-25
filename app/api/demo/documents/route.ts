@@ -46,6 +46,12 @@ function getFileExtension(filename: string): string {
     return filename.split('.').pop()?.toLowerCase() || 'file'
 }
 
+// Confidential files that should NOT be shown on the website
+const HIDDEN_FILES = [
+    'WEB_AGENT_KB.pdf',
+    'web_agent_kb.pdf',
+]
+
 // Cache token in memory to avoid requesting a new one for every API call
 let cachedToken: { token: string; expiresAt: number } | null = null
 
@@ -118,29 +124,45 @@ export async function GET(request: NextRequest) {
         // Get access token
         const accessToken = await getAccessToken()
 
-        // Fetch files from SharePoint drive root
-        const graphResponse = await fetch(
-            `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root/children`,
-            {
+        // Recursively fetch all files from SharePoint drive (root + subfolders)
+        const allDocuments: GraphDriveItem[] = []
+
+        const fetchFolder = async (folderId: string = 'root') => {
+            const endpoint = folderId === 'root'
+                ? `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/root/children`
+                : `https://graph.microsoft.com/v1.0/sites/${siteId}/drives/${driveId}/items/${folderId}/children`
+
+            const graphResponse = await fetch(endpoint, {
                 headers: {
                     Authorization: `Bearer ${accessToken}`,
                     'Content-Type': 'application/json',
                 },
-            }
-        )
+            })
 
-        if (!graphResponse.ok) {
-            const errorData = await graphResponse.text()
-            console.error('Graph API error:', errorData)
-            throw new Error('Failed to fetch documents from SharePoint')
+            if (!graphResponse.ok) {
+                const errorData = await graphResponse.text()
+                console.error('Graph API error:', errorData)
+                return
+            }
+
+            const graphData = await graphResponse.json()
+            const items: GraphDriveItem[] = graphData.value || []
+
+            for (const item of items) {
+                if (item.file) {
+                    allDocuments.push(item)
+                } else if (item.folder) {
+                    // Recurse into subfolders
+                    await fetchFolder(item.id)
+                }
+            }
         }
 
-        const graphData = await graphResponse.json()
-        const items: GraphDriveItem[] = graphData.value || []
+        await fetchFolder()
 
-        // Filter to only files (exclude folders) and map to our format
-        const documents = items
-            .filter((item) => item.file) // Only files, not folders
+        // Map to our format (exclude hidden/confidential files)
+        const documents = allDocuments
+            .filter((item) => !HIDDEN_FILES.includes(item.name))
             .map((item) => ({
                 id: item.id,
                 name: item.name,

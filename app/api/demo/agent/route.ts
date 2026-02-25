@@ -1,4 +1,5 @@
 import { NextRequest } from 'next/server'
+import { query } from '@/lib/db'
 
 /**
  * =============================================================================
@@ -9,7 +10,7 @@ import { NextRequest } from 'next/server'
  * back to the client in real-time.
  * 
  * Agent endpoint: POST /message
- * Request:  { "user_query": "..." }
+ * Request:  { "email": "...", "data": [{ "user_query": "old msg" }, ..., { "user_query": "latest" }] }
  * Response: Streamed JSON chunks like { "chunk": "text..." }
  *           Final chunk: { "status": "success", "response": "full text", "data_retrieved": [] }
  * 
@@ -19,7 +20,7 @@ import { NextRequest } from 'next/server'
  * =============================================================================
  */
 
-const DEFAULT_AGENT_URL = 'https://51c8-103-7-81-242.ngrok-free.app/message'
+const DEFAULT_AGENT_URL = 'https://janet-subarid-semirhythmically.ngrok-free.dev/message'
 
 interface AgentChatRequest {
     message: string
@@ -41,11 +42,36 @@ export async function POST(request: NextRequest) {
         const agentUrl: string = process.env.AGENT_API_URL ?? DEFAULT_AGENT_URL
         console.log('Agent URL being used:', agentUrl)
 
-        // Call the real agent endpoint
+        // Fetch last 2 days of user messages from chat history
+        let historyMessages: { user_query: string }[] = []
+        try {
+            const rows = await query<{ content: string }>(
+                `SELECT content FROM (
+                    SELECT content, created_at FROM chat_messages
+                    WHERE user_email = $1
+                      AND role = 'user'
+                      AND created_at >= NOW() - INTERVAL '2 days'
+                    ORDER BY created_at DESC
+                    OFFSET 1
+                ) sub ORDER BY created_at ASC`,
+                [email]
+            )
+            historyMessages = rows.map(r => ({ user_query: r.content }))
+        } catch (err) {
+            console.error('Failed to fetch chat history for agent:', err)
+        }
+
+        // Build data array: old messages first, current message last
+        const dataArray = [...historyMessages, { user_query: message }]
+
+        // Call the real agent endpoint with email + full message history
+        const agentBody = { email, data: dataArray }
+        console.log('Agent request body:', JSON.stringify(agentBody, null, 2))
+
         const agentResponse = await fetch(agentUrl, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ user_query: message }),
+            body: JSON.stringify(agentBody),
         })
 
         if (!agentResponse.ok || !agentResponse.body) {

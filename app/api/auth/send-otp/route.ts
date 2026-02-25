@@ -12,13 +12,64 @@ import { sendOtpEmail } from '@/lib/email'
 export async function POST(request: NextRequest) {
     try {
         const body = await request.json()
-        const { email } = body
+        const { email, type } = body
+        // type = 'demo' (default) or 'trial'
+        const signupType = type || 'demo'
 
         if (!email || !email.includes('@')) {
             return NextResponse.json(
                 { error: 'A valid email is required' },
                 { status: 400 }
             )
+        }
+
+        // ── TRIAL SIGNUP: allow demo users to upgrade, block only existing trial users
+        if (signupType === 'trial') {
+            const existingTrial = await query<{ email: string }>(
+                'SELECT email FROM trial_users WHERE email = $1',
+                [email]
+            )
+            if (existingTrial.length > 0) {
+                return NextResponse.json(
+                    { error: 'This email is already registered for a trial.' },
+                    { status: 403 }
+                )
+            }
+            // Demo users CAN upgrade to trial — no blocking here
+        }
+
+        // ── DEMO SIGNUP: block existing demo users and trial users
+        if (signupType === 'demo') {
+            const existingDemo = await query<{ email: string; is_active: boolean; expires_at: string }>(
+                'SELECT email, is_active, expires_at FROM demo_users WHERE email = $1',
+                [email]
+            )
+            if (existingDemo.length > 0) {
+                const demo = existingDemo[0]
+                const expired = new Date() > new Date(demo.expires_at) || !demo.is_active
+                if (expired) {
+                    return NextResponse.json(
+                        { error: 'This email has already been used for a demo. Please use a new work email to try again.' },
+                        { status: 403 }
+                    )
+                } else {
+                    return NextResponse.json(
+                        { error: 'A demo is already active for this email. Please check your inbox or use a different email.' },
+                        { status: 403 }
+                    )
+                }
+            }
+
+            const existingTrial = await query<{ email: string }>(
+                'SELECT email FROM trial_users WHERE email = $1',
+                [email]
+            )
+            if (existingTrial.length > 0) {
+                return NextResponse.json(
+                    { error: 'This email is already registered for a trial. You cannot start a demo with a trial email.' },
+                    { status: 403 }
+                )
+            }
         }
 
         // Rate limit: max 3 OTPs per email in the last hour

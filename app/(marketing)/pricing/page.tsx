@@ -5,6 +5,7 @@ import { Container, Button, Card, Badge } from '@/components/ui'
 import { TrialOptions, FAQSection, CTASection } from '@/components/sections'
 import { PRICING_PLANS, PRICING_FAQ } from '@/lib/constants'
 import { cn } from '@/lib/utils'
+import { PricingBottomCTA } from './PricingBottomCTA'
 
 export const metadata: Metadata = {
   title: 'Pricing',
@@ -105,26 +106,8 @@ export default function PricingPage() {
       <FAQSection faqs={PRICING_FAQ} />
 
       {/* Bottom CTA */}
-      <section className="py-16 bg-slate-50">
-        <Container>
-          <div className="text-center">
-            <h3 className="text-2xl font-bold text-slate-900 mb-4">
-              Not sure which plan is right for you?
-            </h3>
-            <p className="text-slate-600 mb-6">
-              Start with a free trial or talk to our team.
-            </p>
-            <div className="flex flex-col sm:flex-row gap-4 justify-center">
-              <Link href="/signup/trial">
-                <Button>Start Free Trial</Button>
-              </Link>
-              <Link href="/signup/pilot">
-                <Button variant="outline">Talk to Sales</Button>
-              </Link>
-            </div>
-          </div>
-        </Container>
-      </section>
+      <PricingBottomCTA />
     </>
   )
 }
+
