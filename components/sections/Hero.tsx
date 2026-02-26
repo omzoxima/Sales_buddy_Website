@@ -7,6 +7,13 @@ import { Button, Container } from '@/components/ui'
 import { HERO } from '@/lib/constants'
 
 export function Hero() {
+  const rawVideoUrl = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || '/demo-video.mp4';
+  const isEmbed = rawVideoUrl.includes('sharepoint.com') || rawVideoUrl.includes('youtube.com') || rawVideoUrl.includes('onedrive');
+  // Handle various SharePoint/OneDrive link formats to force them into embed mode
+  const videoSrc = rawVideoUrl
+    .replace('stream.aspx', 'embed.aspx')
+    .replace('&download=1', '&action=embedview');
+
   const [isPlaying, setIsPlaying] = useState(false)
   const [showModal, setShowModal] = useState(false)
   const [demoActive, setDemoActive] = useState(false)
@@ -148,26 +155,40 @@ export function Hero() {
 
           {/* Hero Video */}
           <div className="mt-12 lg:mt-16 max-w-5xl mx-auto">
-            <div
-              className="relative rounded-xl overflow-hidden border border-slate-200 shadow-lg cursor-pointer group"
-              onClick={handlePlayInline}
-            >
-              <video
-                ref={videoRef}
-                src={process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || '/demo-video.mp4'}
-                className="w-full aspect-video object-cover"
-                playsInline
-                onEnded={() => setIsPlaying(false)}
-                preload="metadata"
-              />
-              {!isPlaying && (
-                <div className="absolute inset-0 bg-black/20 flex items-center justify-center transition-opacity group-hover:bg-black/30">
-                  <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
-                    <Play className="w-8 h-8 text-primary-600 ml-1" />
+            {isEmbed ? (
+              <div
+                className="relative rounded-xl overflow-hidden shadow-2xl bg-black"
+                style={{ aspectRatio: '16/9' }}
+              >
+                <iframe
+                  src={videoSrc}
+                  className="w-full h-full border-0"
+                  allow="autoplay; fullscreen"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <div
+                className="relative rounded-xl overflow-hidden border border-slate-200 shadow-lg cursor-pointer group"
+                onClick={handlePlayInline}
+              >
+                <video
+                  ref={videoRef}
+                  src={videoSrc}
+                  className="w-full aspect-video object-cover"
+                  playsInline
+                  onEnded={() => setIsPlaying(false)}
+                  preload="metadata"
+                />
+                {!isPlaying && (
+                  <div className="absolute inset-0 bg-black/20 flex items-center justify-center transition-opacity group-hover:bg-black/30">
+                    <div className="w-20 h-20 bg-white/90 rounded-full flex items-center justify-center shadow-xl group-hover:scale-110 transition-transform">
+                      <Play className="w-8 h-8 text-primary-600 ml-1" />
+                    </div>
                   </div>
-                </div>
-              )}
-            </div>
+                )}
+              </div>
+            )}
           </div>
         </Container>
       </section>
@@ -189,14 +210,25 @@ export function Hero() {
             >
               <X className="w-8 h-8" />
             </button>
-            <video
-              ref={modalVideoRef}
-              src={process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || '/demo-video.mp4'}
-              className="w-full rounded-xl"
-              controls
-              autoPlay
-              playsInline
-            />
+            {isEmbed ? (
+              <div className="w-full rounded-xl overflow-hidden bg-black" style={{ aspectRatio: '16/9' }}>
+                <iframe
+                  src={videoSrc}
+                  className="w-full h-full border-0"
+                  allow="autoplay; fullscreen"
+                  allowFullScreen
+                />
+              </div>
+            ) : (
+              <video
+                ref={modalVideoRef}
+                src={videoSrc}
+                className="w-full rounded-xl"
+                controls
+                autoPlay
+                playsInline
+              />
+            )}
           </div>
         </div>
       )}

@@ -23,6 +23,13 @@ export default function DemoExperiencePage() {
     const router = useRouter()
     const email = searchParams.get('email') || ''
     const isWelcome = searchParams.get('welcome') === 'true'
+
+    const rawVideoUrl = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || '/demo-video.mp4';
+    const isEmbed = rawVideoUrl.includes('sharepoint.com') || rawVideoUrl.includes('youtube.com') || rawVideoUrl.includes('onedrive');
+    const videoSrc = rawVideoUrl
+        .replace('stream.aspx', 'embed.aspx')
+        .replace('&download=1', '&action=embedview');
+
     const [documents, setDocuments] = useState<Document[]>([])
     const [isLoading, setIsLoading] = useState(true)
     const [previewDoc, setPreviewDoc] = useState<Document | null>(null)
@@ -153,14 +160,23 @@ export default function DemoExperiencePage() {
                                 className="relative bg-black rounded-xl overflow-hidden shadow-2xl"
                                 style={{ aspectRatio: '16/9' }}
                             >
-                                <video
-                                    className="w-full h-full object-cover"
-                                    controls
-                                    playsInline
-                                >
-                                    <source src={process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || '/demo-video.mp4'} type="video/mp4" />
-                                    Your browser does not support the video tag.
-                                </video>
+                                {isEmbed ? (
+                                    <iframe
+                                        src={videoSrc}
+                                        className="w-full h-full border-0"
+                                        allow="autoplay; fullscreen"
+                                        allowFullScreen
+                                    />
+                                ) : (
+                                    <video
+                                        className="w-full h-full object-cover"
+                                        controls
+                                        playsInline
+                                    >
+                                        <source src={videoSrc} type="video/mp4" />
+                                        Your browser does not support the video tag.
+                                    </video>
+                                )}
                             </div>
                         </div>
                     </div>
