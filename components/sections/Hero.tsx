@@ -9,10 +9,10 @@ import { HERO } from '@/lib/constants'
 export function Hero() {
   const rawVideoUrl = process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || '/demo-video.mp4';
   const isEmbed = rawVideoUrl.includes('sharepoint.com') || rawVideoUrl.includes('youtube.com') || rawVideoUrl.includes('onedrive');
-  // Handle various SharePoint/OneDrive link formats to force them into embed mode
-  const videoSrc = rawVideoUrl
-    .replace('stream.aspx', 'embed.aspx')
-    .replace('&download=1', '&action=embedview');
+  // Auto-convert YouTube watch URLs → embed URLs, and SharePoint stream → embed
+  let videoSrc = rawVideoUrl.replace('stream.aspx', 'embed.aspx').replace('&download=1', '&action=embedview');
+  const ytMatch = videoSrc.match(/youtube\.com\/watch\?v=([^&]+)/);
+  if (ytMatch) videoSrc = `https://www.youtube.com/embed/${ytMatch[1]}`;
 
   const [isPlaying, setIsPlaying] = useState(false)
   const [showModal, setShowModal] = useState(false)
