@@ -1,4 +1,5 @@
 import type { Metadata } from 'next'
+import { Suspense } from 'react'
 import { Header } from '@/components/layout/Header'
 import { Footer } from '@/components/layout/Footer'
 import { FeedbackButton } from '@/components/ui/FeedbackButton'
@@ -53,9 +54,12 @@ export default function RootLayout({
         <Header />
         <main className="flex-1">{children}</main>
         <Footer />
-        <FeedbackButton />
+        <Suspense fallback={null}>
+          <FeedbackButton />
+        </Suspense>
         <ChatAgent />
       </body>
     </html>
   )
 }
+

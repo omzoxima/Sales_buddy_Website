@@ -158,7 +158,7 @@ export default function DemoExperiencePage() {
                                     controls
                                     playsInline
                                 >
-                                    <source src="/demo-video.mp4" type="video/mp4" />
+                                    <source src={process.env.NEXT_PUBLIC_DEMO_VIDEO_URL || '/demo-video.mp4'} type="video/mp4" />
                                     Your browser does not support the video tag.
                                 </video>
                             </div>
