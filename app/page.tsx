@@ -13,7 +13,6 @@ export default function HomePage() {
   return (
     <>
       <Hero />
-      <SocialProof />
       <TrialOptions />
       <ProblemSection />
       <SolutionSection />

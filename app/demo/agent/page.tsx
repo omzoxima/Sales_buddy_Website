@@ -2,8 +2,9 @@
 
 import { useState, useRef, useEffect, useCallback } from 'react'
 import { useSearchParams, useRouter } from 'next/navigation'
-import { Send, Bot, User, ArrowLeft, Sparkles, MessageSquare, ShieldAlert, Clock, BookOpen, Users, Star, X } from 'lucide-react'
+import { Send, Bot, User, ArrowLeft, Sparkles, MessageSquare, ShieldAlert, Clock, BookOpen, Users, Star, X, HelpCircle } from 'lucide-react'
 import { GuidedTour } from '@/components/demo/GuidedTour'
+import { FaqModal } from '@/components/demo/FaqModal'
 
 interface Message {
     id: string
@@ -33,6 +34,7 @@ export default function AgentDemoPage() {
     const [sessionStatus, setSessionStatus] = useState<SessionStatus | null>(null)
     const [isExpired, setIsExpired] = useState(false)
     const [showTour, setShowTour] = useState(false)
+    const [showFaq, setShowFaq] = useState(false)
     const [showFeedback, setShowFeedback] = useState(false)
     const [feedbackRating, setFeedbackRating] = useState(0)
     const [feedbackHover, setFeedbackHover] = useState(0)
@@ -416,6 +418,7 @@ export default function AgentDemoPage() {
     return (
         <>
             {showTour && <GuidedTour onClose={() => setShowTour(false)} />}
+            {showFaq && <FaqModal onClose={() => setShowFaq(false)} />}
             <section className="h-[calc(100vh-5rem)] flex flex-col" style={{ background: 'linear-gradient(135deg, #f8fafc 0%, #eef2ff 50%, #f1f5f9 100%)' }}>
                 {/* Chat Header */}
                 <div className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 shadow-sm relative z-10">
@@ -472,6 +475,14 @@ export default function AgentDemoPage() {
                                 >
                                     <MessageSquare className="w-3.5 h-3.5" />
                                     <span className="hidden sm:inline">Feedback</span>
+                                </button>
+                                <button
+                                    onClick={() => setShowFaq(true)}
+                                    className="flex items-center gap-1.5 text-xs font-medium text-emerald-600 hover:text-emerald-700 bg-emerald-50 hover:bg-emerald-100 border border-emerald-200 px-3 py-1.5 rounded-lg transition-all duration-200"
+                                    title="FAQ"
+                                >
+                                    <HelpCircle className="w-3.5 h-3.5" />
+                                    <span className="hidden sm:inline">FAQ</span>
                                 </button>
                                 <a
                                     href={`/contact?email=${encodeURIComponent(email)}`}
