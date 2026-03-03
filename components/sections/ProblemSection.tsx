@@ -19,7 +19,7 @@ export function ProblemSection() {
             THE PROBLEM
           </p>
           <h2 className="text-3xl sm:text-4xl font-bold text-slate-900">
-            Sound Familiar?
+            Sounds Familiar!!
           </h2>
         </div>
 

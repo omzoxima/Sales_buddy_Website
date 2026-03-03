@@ -1,3 +1,4 @@
+import Image from 'next/image'
 import type { Metadata } from 'next'
 import { Upload, Brain, MessageSquare, BarChart } from 'lucide-react'
 import { Container } from '@/components/ui'
@@ -17,8 +18,7 @@ const steps = [
     details: ['Drag and drop or bulk upload', 'AI extracts and indexes content', 'Usually ready in minutes'],
     gradient: 'from-blue-500 to-indigo-600',
     lightGradient: 'from-blue-50 to-indigo-50',
-    illustrationEmojis: ['📄', '📊', '📑'],
-    illustrationLabel: 'Drag & drop your files',
+    image: '/uploaddocuments.png',
   },
   {
     number: '02',
@@ -28,8 +28,7 @@ const steps = [
     details: ['Understands technical specs', 'Learns pricing and configurations', 'Connects related information'],
     gradient: 'from-purple-500 to-pink-600',
     lightGradient: 'from-purple-50 to-pink-50',
-    illustrationEmojis: ['🧠', '⚡', '🔗'],
-    illustrationLabel: 'AI Processing',
+    image: '/aiknowsproduct.png',
   },
   {
     number: '03',
@@ -39,8 +38,7 @@ const steps = [
     details: ['Works on mobile and desktop', 'Voice input supported', 'Answers in seconds'],
     gradient: 'from-emerald-500 to-teal-600',
     lightGradient: 'from-emerald-50 to-teal-50',
-    illustrationEmojis: ['💬', '🎤', '✅'],
-    illustrationLabel: 'Natural Language Q&A',
+    image: '/teamchat.png',
   },
   {
     number: '04',
@@ -50,8 +48,7 @@ const steps = [
     details: ['Daily pipeline briefings', 'Update CRM by voice', 'Never miss a follow-up'],
     gradient: 'from-orange-500 to-red-600',
     lightGradient: 'from-orange-50 to-red-50',
-    illustrationEmojis: ['📈', '🔄', '🎯'],
-    illustrationLabel: 'Pipeline Intelligence',
+    image: '/crmconnect.png',
   },
 ]
 
@@ -111,26 +108,14 @@ export default function HowItWorksPage() {
 
                 {/* Illustration */}
                 <div className="flex-1 w-full">
-                  <div className={`bg-gradient-to-br ${step.lightGradient} rounded-2xl aspect-[4/3] flex items-center justify-center border border-slate-100 shadow-sm overflow-hidden relative`}>
-                    {/* Decorative circles */}
-                    <div className={`absolute -top-10 -right-10 w-40 h-40 bg-gradient-to-br ${step.gradient} rounded-full opacity-10`} />
-                    <div className={`absolute -bottom-8 -left-8 w-32 h-32 bg-gradient-to-br ${step.gradient} rounded-full opacity-10`} />
-
-                    <div className="relative text-center p-8">
-                      <div className="flex items-center justify-center gap-4 mb-6">
-                        {step.illustrationEmojis.map((emoji, i) => (
-                          <div
-                            key={i}
-                            className={`w-16 h-16 bg-white rounded-2xl shadow-md flex items-center justify-center text-3xl ${i === 1 ? 'scale-110 shadow-lg' : ''
-                              }`}
-                          >
-                            {emoji}
-                          </div>
-                        ))}
-                      </div>
-                      <div className={`inline-block bg-gradient-to-r ${step.gradient} text-white text-sm font-medium px-4 py-2 rounded-full`}>
-                        {step.illustrationLabel}
-                      </div>
+                  <div className={`bg-white rounded-2xl overflow-hidden shadow-xl border border-slate-100 relative group`}>
+                    <div className="aspect-[4/3] relative">
+                      <Image
+                        src={step.image}
+                        alt={step.title}
+                        fill
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
                     </div>
                   </div>
                 </div>

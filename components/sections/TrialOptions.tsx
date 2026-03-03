@@ -37,7 +37,7 @@ export function TrialOptions() {
   }, [])
 
   return (
-    <section className="section-padding bg-white">
+    <section className="pt-8 pb-16 lg:pt-12 lg:pb-24 bg-white">
       <Container>
         {/* Section Header */}
         <div className="text-center mb-12">

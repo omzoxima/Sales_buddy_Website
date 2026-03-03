@@ -87,7 +87,7 @@ export function Hero() {
 
   return (
     <>
-      <section className="bg-gradient-hero py-16 lg:py-24">
+      <section className="bg-gradient-hero pt-8 pb-16 lg:pt-12 lg:pb-24">
         <Container>
           <div className="max-w-4xl mx-auto text-center">
             {/* Overline */}
@@ -162,6 +162,7 @@ export function Hero() {
               >
                 <iframe
                   src={videoSrc}
+                  title="Salesbuddy in Action"
                   className="w-full h-full border-0"
                   allow="autoplay; fullscreen"
                   allowFullScreen

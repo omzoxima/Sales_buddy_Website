@@ -62,7 +62,7 @@ export const TRIAL_OPTIONS = [
     icon: '📄',
     badge: 'MOST POPULAR',
     title: 'Document Trial',
-    description: 'Upload your own product docs and test with your real data. Full self-service.',
+    description: 'Connect with your own product docs and test with your real data. Full self-service.',
     features: [
       'Your catalogs, price lists, battlecards',
       'AI learns your products in minutes',
@@ -81,7 +81,7 @@ export const TRIAL_OPTIONS = [
     title: 'Guided Pilot',
     description: 'We set up everything: your docs, your CRM, your team. Full experience, zero effort.',
     features: [
-      'We upload and configure your documents',
+      'We connect and configure your documents',
       'We connect your Salesforce',
       'Dedicated support throughout',
     ],
