@@ -1,24 +1,27 @@
 import {
-  Hero,
-  SocialProof,
-  TrialOptions,
-  ProblemSection,
-  SolutionSection,
-  TestimonialSection,
-  StatsSection,
-  CTASection,
+  CarouselHero,
+  ExpectationsSection,
+  TollSection,
+  TheShiftSection,
+  ValuePropSection,
+  EnterpriseTestimonialSection,
+  TheForkSection,
+  SpeedSection,
+  OfferSection,
 } from '@/components/sections'
 
 export default function HomePage() {
   return (
     <>
-      <Hero />
-      <TrialOptions />
-      <ProblemSection />
-      <SolutionSection />
-      <StatsSection />
-      <TestimonialSection />
-      <CTASection />
+      <CarouselHero />
+      <ExpectationsSection />
+      <TollSection />
+      <TheShiftSection />
+      <ValuePropSection />
+      <EnterpriseTestimonialSection />
+      <TheForkSection />
+      <SpeedSection />
+      <OfferSection />
     </>
   )
 }

@@ -9,48 +9,52 @@ export function Footer() {
 
   return (
     <footer className="bg-slate-900 text-white">
-      <Container className="py-12 lg:py-16">
-        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-8 lg:gap-12">
-          {/* Logo & Description */}
-          <div className="col-span-2 md:col-span-4 lg:col-span-1">
-            <Link href="/" className="inline-block mb-4">
-              <Image
-                src="/logo.svg"
-                alt={SITE_CONFIG.name}
-                width={140}
-                height={40}
-                className="h-8 w-auto brightness-0 invert"
-              />
-            </Link>
-            <p className="text-slate-400 text-sm mb-4">
-              AI-powered sales assistant for equipment sales teams.
+      <Container size="full" className="py-16 lg:py-24 px-6 md:px-12 lg:px-20">
+        {/* Top Section: Brand Story & Context */}
+        <div className="mb-16 border-b border-slate-800 pb-16">
+          <div className="space-y-6">
+            <p className="text-xl text-slate-300 leading-relaxed font-medium">
+              Salezx is built by <span className="text-white font-bold">Zoxima</span> — an AI consulting and implementation company working with enterprises across manufacturing, healthcare, and FMCG.
             </p>
-            <div className="flex gap-4">
-              {SOCIAL_LINKS.map((social) => {
-                const Icon = social.icon === 'Linkedin' ? Linkedin : social.icon === 'Twitter' ? Twitter : Youtube
-                return (
-                  <a
-                    key={social.label}
-                    href={social.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="text-slate-400 hover:text-white transition-colors"
-                    aria-label={social.label}
-                  >
-                    <Icon className="w-5 h-5" />
-                  </a>
-                )
-              })}
+            <p className="text-lg text-slate-400 leading-relaxed">
+              Built for equipment & manufacturing sales teams with 20–200 reps.
+              <span className="text-slate-300 block mt-2 font-semibold">Salesforce-native. Works on top of your existing systems.</span>
+            </p>
+            <div className="pt-4 flex flex-col sm:flex-row sm:items-center gap-6">
+              <a href="mailto:hello@salezx.com" className="text-xl font-bold text-blue-400 hover:text-blue-300 transition-colors flex items-center gap-2 group">
+                hello@salezx.com
+                <div className="w-8 h-px bg-blue-400 group-hover:w-12 transition-all mt-1" />
+              </a>
+              <div className="flex gap-6">
+                {SOCIAL_LINKS.map((social) => {
+                  const Icon = social.icon === 'Linkedin' ? Linkedin : social.icon === 'Twitter' ? Twitter : Youtube
+                  return (
+                    <a
+                      key={social.label}
+                      href={social.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-slate-400 hover:text-white transition-colors"
+                      aria-label={social.label}
+                    >
+                      <Icon className="w-6 h-6" />
+                    </a>
+                  )
+                })}
+              </div>
             </div>
           </div>
+        </div>
 
+        {/* Bottom Section: Grouped Links */}
+        <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-4 gap-12 lg:gap-16">
           {/* Product Links */}
           <div>
-            <h3 className="font-semibold mb-4">Product</h3>
-            <ul className="space-y-3">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-6">Product</h3>
+            <ul className="space-y-4">
               {FOOTER_LINKS.product.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-slate-400 hover:text-white text-sm transition-colors">
+                  <Link href={link.href} className="text-slate-300 hover:text-white text-sm font-medium transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -60,11 +64,11 @@ export function Footer() {
 
           {/* Resources Links */}
           <div>
-            <h3 className="font-semibold mb-4">Resources</h3>
-            <ul className="space-y-3">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-6">Resources</h3>
+            <ul className="space-y-4">
               {FOOTER_LINKS.resources.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-slate-400 hover:text-white text-sm transition-colors">
+                  <Link href={link.href} className="text-slate-300 hover:text-white text-sm font-medium transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -74,11 +78,11 @@ export function Footer() {
 
           {/* Company Links */}
           <div>
-            <h3 className="font-semibold mb-4">Company</h3>
-            <ul className="space-y-3">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-6">Company</h3>
+            <ul className="space-y-4">
               {FOOTER_LINKS.company.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-slate-400 hover:text-white text-sm transition-colors">
+                  <Link href={link.href} className="text-slate-300 hover:text-white text-sm font-medium transition-colors">
                     {link.label}
                   </Link>
                 </li>
@@ -88,11 +92,11 @@ export function Footer() {
 
           {/* Legal Links */}
           <div>
-            <h3 className="font-semibold mb-4">Legal</h3>
-            <ul className="space-y-3">
+            <h3 className="text-sm font-bold uppercase tracking-widest text-slate-500 mb-6">Legal</h3>
+            <ul className="space-y-4">
               {FOOTER_LINKS.legal.map((link) => (
                 <li key={link.href}>
-                  <Link href={link.href} className="text-slate-400 hover:text-white text-sm transition-colors">
+                  <Link href={link.href} className="text-slate-300 hover:text-white text-sm font-medium transition-colors">
                     {link.label}
                   </Link>
                 </li>

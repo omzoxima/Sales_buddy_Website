@@ -81,7 +81,9 @@ export function CTASection({
   }
 
   return (
-    <section className="bg-gradient-cta py-16 lg:py-24">
+    <section className="bg-gradient-cta py-16 lg:py-24 relative overflow-hidden">
+      {/* Visible Section Divider */}
+      <div className="absolute top-0 left-0 w-full h-px bg-white/10" />
       <Container>
         <div className="text-center">
           <h2 className="text-3xl sm:text-4xl font-bold text-white mb-4">

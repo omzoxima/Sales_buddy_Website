@@ -5,7 +5,9 @@ import { TESTIMONIAL } from '@/lib/constants'
 
 export function TestimonialSection() {
   return (
-    <section className="section-padding bg-slate-50">
+    <section className="section-padding bg-slate-50 relative overflow-hidden">
+      {/* Visible Section Divider */}
+      <div className="absolute top-0 left-0 w-full h-px bg-slate-200/60" />
       <Container size="md">
         <div className="text-center">
           <p className="text-primary-600 font-medium text-sm tracking-wide mb-8">
