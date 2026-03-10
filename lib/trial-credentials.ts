@@ -1,5 +1,5 @@
 import { query } from './db'
-import nodemailer from 'nodemailer'
+import { EmailClient } from '@azure/communication-email'
 import { nowIST } from './timezone'
 
 /**
@@ -32,17 +32,9 @@ interface TrialUser {
   expires_at: Date
 }
 
-const transporter = nodemailer.createTransport({
-  host: process.env.SMTP_HOST || 'smtp.gmail.com',
-  port: parseInt(process.env.SMTP_PORT || '587'),
-  secure: process.env.SMTP_PORT === '465',
-  auth: {
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-  },
-})
+const emailClient = new EmailClient(process.env.ACS_CONNECTION_STRING!)
 
-const FROM_EMAIL = process.env.SMTP_FROM || process.env.SMTP_USER || 'noreply@zoxima.com'
+const SENDER_EMAIL = process.env.SENDER_EMAIL || 'DoNotReply@mail.salezx.com'
 
 /**
  * Check if user already registered for trial
@@ -97,12 +89,7 @@ export async function sendTrialCredentialsEmail(
   name: string,
   credentials: TrialCredentials
 ): Promise<boolean> {
-  try {
-    await transporter.sendMail({
-      from: FROM_EMAIL,
-      to: email,
-      subject: `Your SalesBuddy Free Trial Credentials`,
-      html: `
+  const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -173,11 +160,20 @@ export async function sendTrialCredentialsEmail(
     </div>
   </div>
 </body>
-</html>
-            `.trim(),
-    })
+</html>`.trim()
 
-    return true
+  try {
+    const message = {
+      senderAddress: SENDER_EMAIL,
+      recipients: { to: [{ address: email }] },
+      content: {
+        subject: 'Your SalesBuddy Free Trial Credentials',
+        html,
+      },
+    }
+    const poller = await emailClient.beginSend(message)
+    const result = await poller.pollUntilDone()
+    return result.status === 'Succeeded'
   } catch (err) {
     console.error('Failed to send trial credentials email:', err)
     return false
